@@ -1,0 +1,1 @@
+{"dpi":96,"width":180,"height":100,"bleed":0.5,"diameter":2,"state1Text":"⬅","state1Image":{"src":"https://magicframeapp.glitch.me/"},"state1Scale":"100","state1X":"22","state1Y":"87","state1Rot":"0","state2Text":"➡","state2Image":{"src":"https://magicframeapp.glitch.me/undefined"},"state2Scale":"100","state2X":"20","state2Y":"87","state2Rot":0}

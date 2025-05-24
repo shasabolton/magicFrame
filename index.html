@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- 
+      This is an HTML comment
+      You can write text in a comment and the content won't be visible in the page
+    -->
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="https://glitch.com/favicon.ico" />
+
+    <!--
+      This is the page head - it contains info the browser uses
+      Like the title, which appears on the browser tab but not inside the page
+      Further down you'll see the content that displays in the page
+    -->
+    <title>Magic Frame</title>
+
+    <!-- The website stylesheet -->
+    <link rel="stylesheet" href="/style.css" />
+
+    <!-- The website JavaScript file -->
+    <script src="/App.js" defer></script>
+    <script src="/script.js" defer></script>
+  </head>
+  <body>
+    <h1>
+          Magic Frame App
+    </h1> 
+    
+    
+    <details>
+      <summary>
+        help      
+      </summary>
+      <p>
+        Use this app to generate perforated images and an overlaying screen. When the screen is shifted slightly, either of the images is hidden allowing you to magically change the picture. 
+        The images can then be printed on transparency paper. The magic frame or its plans are available to purchase <a href= "http://www.ContraptionCart.etsy.com" target="_blank">here</a>
+      </p>
+      <p>
+        File: load examples, download an image file for printing. Save your projects data as a text file to upload to upload later. 
+      </p>
+      <p>
+        Frame Settings: Set the size of your frame. The default size suits the standard available picture frame. 
+      </p>
+      <p>
+        State 1 and 2: Set your 2 messages by typing in the text field. Or upload an image. The image must be a silhoette with an alpha channel. (that means no pixels in the white areas)
+      </p>
+      
+    </details>
+    
+    <details>
+      <summary>File</summary>
+        
+       <label for = "exampleFilesSelect">Example Projects:</label>
+        <select id = "exampleFilesSelect" onchange="magicFrame.exampleSelectListener(this)">      
+        </select>
+        
+        <button onclick = "magicFrame.saveCanvas()">
+          print
+        </button>   
+          
+        <button onclick = "magicFrame.saveProject()">
+          save as
+        </button> 
+        
+        <input type = "file" onchange= "magicFrame.openProject(this)">
+        
+       
+    </details>
+    
+    <details id = "frameSettingsDiv">     
+        <summary>Frame Settings</summary>
+   </details>
+      
+    
+    
+    <details id = "message1Div">
+       <summary>
+         State 1
+      </summary>                   
+    </details>
+    
+    <details id = "message2Div">
+       <summary>
+         State 2
+      </summary>                   
+    </details>
+    
+    <button id = "generateButton" onclick = "magicFrame.update()">
+      Generate (if image fails to draw)
+    </button>
+    
+    <div>
+      <canvas id = "fullPageCanvas" >
+      </canvas>
+    </div>
+    
+    <template id = "valuedSlider">
+      <label>{label}</label>
+      <input bound="val,value" type = "number" value = "{val}" onchange= "App.eventHandler(this,'val')">
+      <input bound="val,value" type="range" value = "{val}" min = "{min}" max = "{max}" step = "{step}"  oninput= "App.eventHandler(this,'val')">
+    </template>
+    
+    <template id = "textInput">
+      <label>{label}</label>
+      <input bound="val,value" type = "text"  value = "{val}" onchange= "App.eventHandler(this,'val')">
+    </template>
+    
+    <template id = "fileInput">
+      <label>{label}</label>
+      <input type = "file" onchange= "App.eventHandler(this,'val')">
+    </template>
+    
+  </body>
+</html>
