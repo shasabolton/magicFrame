@@ -92,7 +92,7 @@ magicFrame.makeGui = function(){
 
 magicFrame.exampleSelectListener = function(select){
   //window.confirm("Expect a few seconds to load the example?");
-  var path = '/exampleProjects/'+select.value+".txt";
+  var path = 'exampleProjects/'+select.value+".txt";
   magicFrame.loadFromFilePath(path);
 }
 
