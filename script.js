@@ -124,6 +124,7 @@ magicFrame.loadFromFile = function(file){
 
 magicFrame.loadProject = function(savedData){
   //alert("loading");
+  this.supressUpdate = true;
   for(var props in savedData){
     if(typeof this.data[props].val === "object"){
       this.data[props].val.src =savedData[props].src;
@@ -138,26 +139,44 @@ magicFrame.loadProject = function(savedData){
      generateButton.addEventListener("animationend", ()=>{
        generateButton.classList.remove("flash");
      })
-    //magicFrame.update();
+     this.supressUpdate = false;
+     magicFrame.update();
 }
 
 magicFrame.saveCanvas = function(){
     var paperSizeString = prompt("This will download an image file the same size as your chosen paper. Print with 'fit to page' and 'zero border' to ensure correct sizing. Enter your paper Size mm...", "210x297");
-    var paperSize = paperSizeString.split("x");
-    paperSize[0] = this.mmToPx(paperSize[0]);
-    paperSize[1] = this.mmToPx(paperSize[1]);
+    var paperSizeMm = paperSizeString.split("x");
+    var paperSizePx = [0,0];
+    paperSizePx[0] = this.mmToPx(paperSizeMm[0]);
+    paperSizePx[1] = this.mmToPx(paperSizeMm[1]);
     //var paperWidth = parseInt(paperSize[0]);
     //var paperHeight = parseInt(paperSize[1]);
     var paperCanvas = document.createElement("canvas");
-    paperCanvas.width = parseInt(paperSize[0]);
-    paperCanvas.height = parseInt(paperSize[1]);
+    paperCanvas.width = parseInt(paperSizePx[0]);
+    paperCanvas.height = parseInt(paperSizePx[1]);
     var contentCanvas = this.fullPageCanvas;
     var paperCtx = paperCanvas.getContext("2d");
     //var contentIntendedWidth = 
     paperCtx.drawImage(contentCanvas,paperCanvas.width/2 - contentCanvas.width/2, paperCanvas.height/2 - contentCanvas.height/2);
   // get canvas data  
     var image = paperCanvas.toDataURL();    
-    App.downloadFile("Magic Frame.png", image);  
+    //App.downloadFile("Magic Frame.png", image);  
+    
+    
+    //save as pdf
+    window.jsPDF = window.jspdf.jsPDF;
+    if (paperCanvas.width > paperCanvas.height) {
+      pdf = new jsPDF('l', 'mm', [paperSizeMm[0], paperSizeMm[1]]);
+    }
+    else {
+      pdf = new jsPDF('p', 'mm', [paperSizeMm[1], paperSizeMm[0]]);
+    }
+    //then we get the dimensions from the 'pdf' file itself
+    var pdfWidth = pdf.internal.pageSize.getWidth();
+    var pdfHeight = pdf.internal.pageSize.getHeight();
+    pdf.addImage(paperCanvas, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save("download.pdf");
+    
   }
 
 magicFrame.makeHolesCanvas = function(){
@@ -236,7 +255,7 @@ magicFrame.drawPrefixInsideHoles = function(prefix){
     
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
-    ctx.strokeRect(0,0,canvas.width, canvas.height);
+    //ctx.strokeRect(0,0,canvas.width, canvas.height);
    
     //Add bleed
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -245,7 +264,10 @@ magicFrame.drawPrefixInsideHoles = function(prefix){
     canvas.height = canvas.height + bleed*2;
     // Redraw the stored content onto the resized canvas
     ctx.putImageData(imageData, bleed, bleed);
-    ctx.strokeRect(0,0,canvas.width, canvas.height);
+    ctx.lineWidth = bleed;
+    //ctx.strokeRect(0,0,canvas.width, canvas.height);
+    ctx.strokeRect(bleed/2,bleed/2,canvas.width-bleed, canvas.height-bleed);
+    //alert(canvas.width/96*25.4 + "mm");
    
  }
 
@@ -274,7 +296,11 @@ magicFrame.draw = function(){
   this.screenCtx.globalCompositeOperation = 'source-over';
   magicFrame.drawRegistrationMarks(this.screenCanvas);
   var bleed = this.mmToPx(this.data.bleed.val);
-  this.screenCtx.strokeRect(this.screenCanvas.width-bleed-shiftPx,bleed,bleed,this.screenCanvas.height-bleed*2);
+  //shortening line down side as a box
+  //this.screenCtx.strokeRect(this.screenCanvas.width-bleed-shiftPx,bleed,bleed,this.screenCanvas.height-bleed*2);
+  //shortening line down side as one thick line
+  this.screenCtx.fillRect(this.screenCanvas.width-bleed-shiftPx,bleed,bleed,this.screenCanvas.height-bleed*2);
+  
   
   //full page
   this.fullPageCanvas = document.createElement("canvas");
@@ -292,8 +318,17 @@ magicFrame.draw = function(){
 }
 
 magicFrame.update = function(){
+  //this.draw();
   
-  this.draw();
+  if(this.hasOwnProperty("supressUpdate")===true){
+    if(this.supressUpdate === false){
+      this.draw();  
+    }
+  }
+  else{
+      this.draw();
+  }
+  
 };
 
 magicFrame.init = function(){
